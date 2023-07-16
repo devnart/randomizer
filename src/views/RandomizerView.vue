@@ -24,7 +24,9 @@ const splitInput = () => {
 </script>
 
 <template>
+            <h1>Randomizer</h1>
     <main>
+
         <div class="input-group">
             <div v-if="isEmpty" class="warning-message">The list is empty.</div>
             <div class="input">
@@ -37,11 +39,22 @@ const splitInput = () => {
 </template>
   
 <style scoped lang="scss">
+
+h1 {
+    font-family: "Goia Display";
+    font-weight: 800;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 40px;
+    font-size: 32px;
+}
 main {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 100vh;
+    margin-top: 150px;
     flex-direction: column;
 
     .input-group {
