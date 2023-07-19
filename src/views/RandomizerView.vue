@@ -25,6 +25,8 @@ const shuffleArray = (array) => {
 }
 
 const addItem = (item) => {
+    item = item.replace(/^,\s*|,\s*$/g, '');
+    
     if (items.value.includes(item) || item === "") {
         result.value = '';
         isExist.value = true;
@@ -33,11 +35,12 @@ const addItem = (item) => {
 
     isExist.value = false;
     isEmpty.value = false;
-    item = item.replace(/^,\s*|,\s*$/g, '');
+    
 
     if (item.includes(",")) {
-        const splitted = item.split(',');
-        items.value.unshift(...splitted);
+        const splitted = item.split(',').map(part => part.trim());
+        const uniqueParts = splitted.filter(part => !items.value.includes(part));
+        items.value.unshift(...uniqueParts);
     } else {
         items.value.unshift(item);
     }
