@@ -11,7 +11,7 @@ defineProps({
 </template>
   
 <style lang="scss">
-button {
+.btn-primary {
     display: inline-flex;
     padding: 10px 60px;
     justify-content: center;
@@ -28,7 +28,7 @@ button {
     transition: all 150ms ease-in-out;
 
     &:hover {
-        transform: translate3d(-5px, -5px,0);
+        transform: translate3d(-5px, -5px, 0);
         box-shadow: 5px 5px black;
     }
 }

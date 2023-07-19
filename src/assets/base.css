@@ -56,7 +56,6 @@
 }
 
 body {
-  min-height: 100vh;
   color: var(--color-text);
   background: var(--color-background);
   transition: color 0.5s, background-color 0.5s;
@@ -91,7 +90,10 @@ body {
   a,
   a *,
   button,
-  button * {
+  button *,
+  input[type="checkbox"],
+  input[type="radio"],
+  label{
     cursor: var(--cursorPointer);
   }
 }
