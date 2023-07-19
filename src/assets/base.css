@@ -1,3 +1,52 @@
+@font-face {
+  font-family: "Goia";
+  src: local("Goia"),
+   url(./fonts/Goia/Goia-Regular.otf) format("opentype");
+   font-weight: 400;
+}
+
+@font-face {
+  font-family: "Goia";
+  src: local("Goia"),
+   url(./fonts/Goia/Goia-Bold.otf) format("opentype");
+   font-weight: 600;
+}
+
+@font-face {
+  font-family: "Goia";
+  src: local("Goia"),
+   url(./fonts/Goia/Goia-ExtraBold.otf) format("opentype");
+   font-weight: 800;
+}
+
+@font-face {
+  font-family: "Goia";
+  src: local("Goia"),
+   url(./fonts/Goia/Goia-Medium.otf) format("opentype");
+   font-weight: 500;
+}
+
+@font-face {
+  font-family: "Goia Display";
+  src: local("Goia Display"),
+   url(./fonts/Goia/GoiaDisplay-Bold.otf) format("opentype");
+   font-weight: 600;
+}
+
+@font-face {
+  font-family: "Goia Display";
+  src: local("Goia Display"),
+   url(./fonts/Goia/GoiaDisplay-ExtraBold.otf) format("opentype");
+   font-weight: 800;
+}
+
+@font-face {
+  font-family: "Goia Display";
+  src: local("Goia Display"),
+   url(./fonts/Goia/GoiaDisplay-Medium.otf) format("opentype");
+   font-weight: 500;
+}
+
 /* color palette from <https://github.com/vuejs/theme> */
 :root {
   --vt-c-white: #ffffff;
