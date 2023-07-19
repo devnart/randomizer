@@ -1,13 +1,12 @@
 <script setup>
 import Button from '../components/Button.vue';
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import Music from '../assets/music.mp3'
 
 const text = ref('');
 const result = ref('');
 const isEmpty = ref(false);
 const isExist = ref(false);
-const resultList = ref('');
 const shuffleMode = ref('single');
 const music = ref('')
 const isMusic = ref(false)
@@ -26,7 +25,7 @@ const shuffleArray = (array) => {
 
 const addItem = (item) => {
     item = item.replace(/^,\s*|,\s*$/g, '');
-    
+
     if (items.value.includes(item) || item === "") {
         result.value = '';
         isExist.value = true;
@@ -35,7 +34,7 @@ const addItem = (item) => {
 
     isExist.value = false;
     isEmpty.value = false;
-    
+
 
     if (item.includes(",")) {
         const splitted = item.split(',').map(part => part.trim());
