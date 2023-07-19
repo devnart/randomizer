@@ -7,16 +7,15 @@ defineProps({
 })
 </script>
 <template>
-    <button>{{ text }}</button>
+    <button class="btn-primary">{{ text }}</button>
 </template>
   
-<style scoped lang="scss">
+<style lang="scss">
 button {
     display: inline-flex;
     padding: 10px 60px;
     justify-content: center;
     align-items: center;
-    width: 100%;
     border-radius: 15px;
     border: 5px solid #2C2C2C;
     background: #FFC700;
