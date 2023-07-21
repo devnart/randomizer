@@ -24,7 +24,7 @@ const shuffleArray = (array) => {
 }
 
 const addItem = (item) => {
-    item = item.replace(/^,\s*|,\s*$/g, '');
+    item = item.replace(/^,\s*|,{2,}|,\s*$/g, '');
 
     if (items.value.includes(item) || item === "") {
         result.value = '';
