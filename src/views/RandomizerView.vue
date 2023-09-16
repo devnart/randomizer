@@ -1,6 +1,6 @@
 <script setup>
 import Button from '../components/Button.vue';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import Music from '../assets/music.mp3'
 
 const text = ref('');
@@ -12,6 +12,7 @@ const music = ref('')
 const isMusic = ref(false)
 const getInitialItems = () => []
 const items = ref(getInitialItems())
+const itemsList = ref([])
 
 const shuffleArray = (array) => {
 
@@ -56,6 +57,55 @@ const deleteItem = (item) => {
     }
 
 }
+
+const newShuffle = () => {
+  const children = itemsList.value.$el.children;
+  const lastIndex = children.length - 1;
+  const maxIterations = 3; // Maximum number of iterations
+  let index = 0;
+  let completedIterations = 0;
+  let delay = 70;
+
+  function changeColor() {
+    if ((index <= lastIndex || completedIterations < maxIterations) && delay < 700) {
+      const element = children[index % children.length];
+      const previousElement = children[(index - 1) % children.length];
+      toggleClass(element, previousElement);
+      index++;
+
+      if (completedIterations >= 5 && delay < 700) {
+        delay += 100; // Adjust the value to control the deceleration speed
+      }
+
+      setTimeout(changeColor, delay); // Call the function again after the current delay
+    } else {
+      // The rolling has stopped, do any additional logic you need here
+    }
+
+    if (index > lastIndex) {
+      index = 1;
+      completedIterations++;
+    }
+  }
+
+  // Determine the stopIndex randomly after 3000ms
+  setTimeout(() => {
+    const randomRotations = Math.floor(Math.random() * 3) + 2; // Random number of rotations (2 to 4)
+    stopIndex = (index % children.length) + randomRotations * children.length;
+    completedIterations = randomRotations;
+  }, 3000);
+
+  changeColor();
+
+  function toggleClass(e, pe) {
+    console.log(e);
+    e.classList.add("active");
+    pe.classList.remove("active");
+  }
+};
+
+
+
 
 const splitInput = () => {
 
@@ -116,11 +166,12 @@ const playMusic = () => {
                 <input type="text" @keyup.,="addItem(text)" @keyup.enter="addItem(text)"
                     placeholder="type items (Press ',' or 'enter' to insert)" v-model="text">
             </div>
-            <Button text="Shuffle" @click="splitInput"></Button>
+            <Button text="Shuffle" @click="newShuffle"></Button>
         </div>
         <div>
-            <TransitionGroup name="fade" tag="ul" id="items">
-                <button v-for="(item) in items" class="item btn-primary" :key="item" @click="deleteItem(item)">
+            <TransitionGroup name="fade" tag="ul" id="items" ref="itemsList">
+                <button v-for="(item) in items" class="item btn-primary" :key="item" :data-value="item"
+                    @click="deleteItem(item)">
                     <li>{{ item }}</li>
                 </button>
             </TransitionGroup>
@@ -130,6 +181,10 @@ const playMusic = () => {
 </template>
   
 <style scoped lang="scss">
+.active {
+    background: #FFC700 !important;
+}
+
 .music-checkbox {
     display: inline-flex;
     background: #dbdbdb;
