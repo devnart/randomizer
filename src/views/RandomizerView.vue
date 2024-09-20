@@ -1,6 +1,6 @@
 <script setup>
 import Button from '../components/Button.vue';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import Music from '../assets/music.mp3'
 
 const text = ref('');
@@ -8,19 +8,18 @@ const result = ref('');
 const isEmpty = ref(false);
 const isExist = ref(false);
 const shuffleMode = ref('single');
-const music = ref('')
-const isMusic = ref(false)
-const getInitialItems = () => []
-const items = ref(getInitialItems())
-const itemsList = ref([])
+const music = ref(null);
+const isMusic = ref(false);
+const getInitialItems = () => [];
+const items = ref(getInitialItems());
+const itemsList = ref(null);
+const isShuffling = ref(false);
 
 const shuffleArray = (array) => {
-
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [array[i], array[j]] = [array[j], array[i]];
     }
-
     return array;
 }
 
@@ -36,7 +35,6 @@ const addItem = (item) => {
     isExist.value = false;
     isEmpty.value = false;
 
-
     if (item.includes(",")) {
         const splitted = item.split(',').map(part => part.trim());
         const uniqueParts = splitted.filter(part => !items.value.includes(part));
@@ -48,94 +46,103 @@ const addItem = (item) => {
     text.value = '';
 }
 
-
 const deleteItem = (item) => {
-
-    const i = items.value.indexOf(item)
+    const i = items.value.indexOf(item);
     if (i > -1) {
-        items.value.splice(i, 1)
+        items.value.splice(i, 1);
     }
-
 }
 
 const newShuffle = () => {
-  const children = itemsList.value.$el.children;
-  const lastIndex = children.length - 1;
-  const maxIterations = 3; // Maximum number of iterations
-  let index = 0;
-  let completedIterations = 0;
-  let delay = 70;
+    if (!itemsList.value || !itemsList.value.$el || shuffleMode.value !== 'single') return;
+    
+    const children = itemsList.value.$el.children;
+    const lastIndex = children.length - 1;
+    const maxIterations = 3;
+    let index = 0;
+    let completedIterations = 0;
+    let delay = 70;
 
-  function changeColor() {
-    if ((index <= lastIndex || completedIterations < maxIterations) && delay < 700) {
-      const element = children[index % children.length];
-      const previousElement = children[(index - 1) % children.length];
-      toggleClass(element, previousElement);
-      index++;
-
-      if (completedIterations >= 5 && delay < 700) {
-        delay += 100; // Adjust the value to control the deceleration speed
-      }
-
-      setTimeout(changeColor, delay); // Call the function again after the current delay
-    } else {
-      // The rolling has stopped, do any additional logic you need here
+    // Reset all elements to their original state
+    for (let i = 0; i <= lastIndex; i++) {
+        children[i].classList.remove("active");
     }
 
-    if (index > lastIndex) {
-      index = 1;
-      completedIterations++;
-    }
-  }
+    function changeColor() {
+        if ((index <= lastIndex || completedIterations < maxIterations) && delay < 700) {
+            const element = children[index % children.length];
+            const previousElement = children[(index - 1 + children.length) % children.length];
+            toggleClass(element, previousElement);
+            index++;
 
-  // Determine the stopIndex randomly after 3000ms
-  setTimeout(() => {
-    const randomRotations = Math.floor(Math.random() * 3) + 2; // Random number of rotations (2 to 4)
-    stopIndex = (index % children.length) + randomRotations * children.length;
-    completedIterations = randomRotations;
-  }, 3000);
+            if (completedIterations >= 5 && delay < 700) {
+                delay += 100;
+            }
 
-  changeColor();
-
-  function toggleClass(e, pe) {
-    console.log(e);
-    e.classList.add("active");
-    pe.classList.remove("active");
-  }
-};
-
-
-
-
-const splitInput = () => {
-
-    if (shuffleMode.value == 'single') {
-
-        if (items.value.length === 0) {
-            result.value = '';
-            isEmpty.value = true;
-            return;
+            setTimeout(changeColor, delay);
+        } else {
+            isShuffling.value = false;
+            const randomIndex = Math.floor(Math.random() * items.value.length);
+            result.value = items.value[randomIndex];
         }
 
-        isEmpty.value = false;
-        const randomIndex = Math.floor(Math.random() * items.value.length);
-        result.value = items.value[randomIndex];
-
-    } else if (shuffleMode.value == 'list') {
-        result.value = '';
-        shuffleArray(items.value);
+        if (index > lastIndex) {
+            index = 0;
+            completedIterations++;
+        }
     }
 
+    setTimeout(() => {
+        const randomRotations = Math.floor(Math.random() * 3) + 2;
+        completedIterations = randomRotations;
+    }, 3000);
+
+    changeColor();
+
+    function toggleClass(e, pe) {
+        if (e && pe) {
+            e.classList.add("active");
+            pe.classList.remove("active");
+        }
+    }
+};
+
+const splitInput = () => {
+    if (items.value.length === 0) {
+        result.value = '';
+        isEmpty.value = true;
+        return;
+    }
+
+    isEmpty.value = false;
+    isShuffling.value = true;
+    result.value = '';
+
+    if (shuffleMode.value === 'list') {
+        shuffleArray(items.value);
+        isShuffling.value = false;
+    } else if (shuffleMode.value === 'single') {
+        newShuffle();
+    }
 };
 
 const playMusic = () => {
-    if (isMusic.value == true) {
+    if (!music.value) return;
+    
+    if (isMusic.value) {
         music.value.play();
-        return;
+    } else {
+        music.value.pause();
     }
-    music.value.pause();
 }
 
+onMounted(() => {
+    music.value = document.getElementById('music');
+});
+
+watch(shuffleMode, () => {
+    result.value = '';
+});
 </script>
 
 <template>
@@ -156,27 +163,26 @@ const playMusic = () => {
                 <input type="radio" value="list" id="list" v-model="shuffleMode">
                 <label for="list" class="">List</label>
             </div>
-
         </div>
 
         <div class="input-group">
             <div v-if="isEmpty" class="warning-message">The list is empty.</div>
-            <div v-if="isExist" class="warning-message">The field is empty or this item already exist.</div>
+            <div v-if="isExist" class="warning-message">The field is empty or this item already exists.</div>
             <div class="input">
-                <input type="text" @keyup.,="addItem(text)" @keyup.enter="addItem(text)"
+                <input type="text" @keyup.comma="addItem(text)" @keyup.enter="addItem(text)"
                     placeholder="type items (Press ',' or 'enter' to insert)" v-model="text">
             </div>
-            <Button text="Shuffle" @click="newShuffle"></Button>
+            <Button text="Shuffle" @click="splitInput" :disabled="isShuffling"></Button>
         </div>
         <div>
             <TransitionGroup name="fade" tag="ul" id="items" ref="itemsList">
-                <button v-for="(item) in items" class="item btn-primary" :key="item" :data-value="item"
+                <button v-for="item in items" class="item btn-primary" :key="item" :data-value="item"
                     @click="deleteItem(item)">
                     <li>{{ item }}</li>
                 </button>
             </TransitionGroup>
         </div>
-        <div id="result">{{ result }}</div>
+        <div id="result" v-if="!isShuffling">{{ result }}</div>
     </main>
 </template>
   
@@ -316,7 +322,6 @@ main {
             &::before {
                 background-color: white;
                 border-color: white;
-
             }
         }
     }
@@ -342,4 +347,3 @@ main {
     }
 }
 </style>
-  
